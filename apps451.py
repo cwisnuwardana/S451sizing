@@ -341,8 +341,8 @@ def generate_pdf():
 
     logo = Image("suto_logo.png")
 
-    logo.drawHeight = 90
-    logo.drawWidth = 270
+    logo.drawHeight = 60
+    logo.drawWidth = 290
 
     logo.hAlign = 'CENTER'
 
