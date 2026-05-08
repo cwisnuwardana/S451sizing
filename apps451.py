@@ -288,6 +288,14 @@ def generate_pdf():
 
     elements = []
 
+    logo = Image("suto_logo.png")
+
+    logo.drawHeight = 60
+    logo.drawWidth = 180
+
+    elements.append(logo)
+    elements.append(Spacer(1, 20))
+    
     title = Paragraph(
         "SUTO S451 EX Flow Meter Sizing Report",
         styles['Title']
