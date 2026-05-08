@@ -290,8 +290,8 @@ def generate_pdf():
 
     logo = Image("suto_logo.png")
 
-    logo.drawHeight = 90
-    logo.drawWidth = 270
+    logo.drawHeight = 60
+    logo.drawWidth = 220
 
     elements.append(logo)
     elements.append(Spacer(1, 20))
