@@ -7,6 +7,7 @@ from reportlab.platypus import (
     Spacer,
     Table,
     TableStyle,
+    Image,
 )
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
@@ -25,6 +26,7 @@ st.set_page_config(
 # TITLE
 # =========================================================
 
+st.image("suto_logo.png", width=220)
 st.title("SUTO S451 EX Flow Meter Sizing Tool")
 
 st.markdown("""
