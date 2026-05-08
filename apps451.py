@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
+
 from reportlab.platypus import (
     SimpleDocTemplate,
     Paragraph,
@@ -9,6 +10,7 @@ from reportlab.platypus import (
     TableStyle,
     Image,
 )
+
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.pagesizes import A4
@@ -23,10 +25,11 @@ st.set_page_config(
 )
 
 # =========================================================
-# TITLE
+# HEADER
 # =========================================================
 
-st.image("suto_logo.png", width=220)
+st.image("suto_logo.png", width=260)
+
 st.title("SUTO S451 EX Flow Meter Sizing Tool")
 
 st.markdown("""
@@ -35,7 +38,7 @@ based on SUTO S451 Manual.
 """)
 
 # =========================================================
-# CONSTANT
+# CONVERSION FACTOR
 # =========================================================
 
 MMSCFD_TO_NM3H = 1179.87
@@ -46,6 +49,7 @@ MMSCFD_TO_SM3H = 1253.00
 # =========================================================
 
 S451_TABLE = {
+
     "DN25": {
         "inch": '1"',
         "low": "0.2 ~ 48",
@@ -144,7 +148,7 @@ S451_TABLE = {
 }
 
 # =========================================================
-# FUNCTION
+# FUNCTIONS
 # =========================================================
 
 def mmscfd_to_nm3h(flow):
@@ -166,7 +170,7 @@ def recommend_size(sm3h):
 
 
 # =========================================================
-# SIDEBAR
+# SIDEBAR INPUT
 # =========================================================
 
 st.sidebar.header("Input Data")
@@ -223,10 +227,10 @@ col2.metric("Sm³/h", f"{sm3h:,.2f}")
 if dn:
     col3.metric("Recommended Size", dn)
 else:
-    col3.metric("Recommended Size", "Above DN300")
+    col3.metric("Above Range", "DN300+")
 
 # =========================================================
-# RANGE TABLE
+# FLOW RANGE
 # =========================================================
 
 if dn:
@@ -234,6 +238,7 @@ if dn:
     st.header("S451 Flow Range")
 
     df = pd.DataFrame({
+
         "Range Type": [
             "LOW RANGE",
             "STANDARD RANGE",
@@ -250,14 +255,52 @@ if dn:
     st.table(df)
 
 # =========================================================
+# ACCESSORIES
+# =========================================================
+
+st.header("Accessories & Options")
+
+acc_df = pd.DataFrame({
+
+    "P/N": [
+        "A530 1119",
+        "A530 1120",
+        "A1560",
+        "A1558",
+        "A1559",
+        "A1565",
+    ],
+
+    "Description": [
+        "High-pressure installation device",
+        "High-pressure installation device",
+        "Output Module",
+        "Pressure Option",
+        "Pressure Option",
+        "Low Pressure Option",
+    ],
+
+    "Remark": [
+        "200 mm shaft / >1.5 MPa",
+        "300 mm shaft / >1.5 MPa",
+        "2x4-20mA + Pulse + Modbus",
+        "0 ... 1.6 MPa(g)",
+        "0 ... 5.0 MPa(g)",
+        "0 ... 0.2 MPa(g) Non-Ex",
+    ]
+})
+
+st.table(acc_df)
+
+# =========================================================
 # ENGINEERING NOTES
 # =========================================================
 
 st.header("Engineering Notes")
 
 st.info("""
-Recommended operating range is around
-30% to 70% of max flow range.
+Recommended operating range:
+30% to 70% of max range.
 
 Reference Conditions:
 
@@ -267,8 +310,12 @@ Sm3/h:
 Nm3/h:
 0°C, 1013.25 mbar (DIN1343)
 
-Avoid wet gas and condensate for
-thermal mass flow measurement.
+Avoid wet gas and condensate
+for thermal mass flowmeters.
+
+Recommended straight pipe:
+20D - 50D upstream
+5D downstream
 """)
 
 # =========================================================
@@ -288,23 +335,41 @@ def generate_pdf():
 
     elements = []
 
+    # =====================================================
+    # LOGO
+    # =====================================================
+
     logo = Image("suto_logo.png")
 
-    logo.drawHeight = 60
-    logo.drawWidth = 330
+    logo.drawHeight = 90
+    logo.drawWidth = 270
+
+    logo.hAlign = 'CENTER'
 
     elements.append(logo)
-    elements.append(Spacer(1, 20))
-    
+    elements.append(Spacer(1, 25))
+
+    # =====================================================
+    # TITLE
+    # =====================================================
+
+    title_style = styles['Title']
+    title_style.alignment = 1
+
     title = Paragraph(
         "SUTO S451 EX Flow Meter Sizing Report",
-        styles['Title']
+        title_style
     )
 
     elements.append(title)
-    elements.append(Spacer(1, 12))
+    elements.append(Spacer(1, 20))
+
+    # =====================================================
+    # MAIN INFO TABLE
+    # =====================================================
 
     info = [
+
         ["Project", project_name],
         ["Client", client_name],
         ["Gas Type", gas_type],
@@ -312,20 +377,30 @@ def generate_pdf():
         ["Nm3/h", f"{nm3h:,.2f}"],
         ["Sm3/h", f"{sm3h:,.2f}"],
         ["Recommended Size", dn],
+
     ]
 
-    table = Table(info, colWidths=[180, 250])
+    table = Table(
+        info,
+        colWidths=[180, 250]
+    )
 
     table.setStyle(TableStyle([
+
         ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
         ('GRID', (0,0), (-1,-1), 1, colors.black),
         ('FONTNAME', (0,0), (-1,-1), 'Helvetica'),
         ('BOTTOMPADDING', (0,0), (-1,-1), 8),
+
     ]))
 
     elements.append(table)
 
-    elements.append(Spacer(1, 20))
+    elements.append(Spacer(1, 25))
+
+    # =====================================================
+    # FLOW RANGE
+    # =====================================================
 
     range_title = Paragraph(
         "S451 Flow Range",
@@ -335,10 +410,13 @@ def generate_pdf():
     elements.append(range_title)
 
     range_data = [
+
         ["Range", "Flow (Sm3/h)"],
+
         ["LOW RANGE", data["low"]],
         ["STANDARD RANGE", data["standard"]],
         ["MAX RANGE", data["max"]],
+
     ]
 
     range_table = Table(
@@ -347,33 +425,158 @@ def generate_pdf():
     )
 
     range_table.setStyle(TableStyle([
+
         ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
         ('GRID', (0,0), (-1,-1), 1, colors.black),
+        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
         ('BOTTOMPADDING', (0,0), (-1,-1), 8),
+
     ]))
 
     elements.append(range_table)
 
-    elements.append(Spacer(1, 20))
+    elements.append(Spacer(1, 25))
+
+    # =====================================================
+    # ACCESSORIES
+    # =====================================================
+
+    accessories_title = Paragraph(
+        "Accessories & Options",
+        styles['Heading2']
+    )
+
+    elements.append(accessories_title)
+
+    accessories_data = [
+
+        ["P/N", "Description", "Remark"],
+
+        [
+            "A530 1119",
+            "High-pressure installation device",
+            "For 200 mm shaft / Pressure > 1.5 MPa"
+        ],
+
+        [
+            "A530 1120",
+            "High-pressure installation device",
+            "For 300 mm shaft / Pressure > 1.5 MPa"
+        ],
+
+        [
+            "A1560",
+            "Output Module",
+            "2 x 4-20 mA + Pulse + Modbus RTU"
+        ],
+
+        [
+            "A1558",
+            "Pressure Option",
+            "0 ... 1.6 MPa(g)"
+        ],
+
+        [
+            "A1559",
+            "Pressure Option",
+            "0 ... 5.0 MPa(g)"
+        ],
+
+        [
+            "A1565",
+            "Low Pressure Option",
+            "0 ... 0.2 MPa(g) Non-Ex only"
+        ],
+    ]
+
+    accessories_table = Table(
+        accessories_data,
+        colWidths=[90, 180, 220]
+    )
+
+    accessories_table.setStyle(TableStyle([
+
+        ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
+        ('GRID', (0,0), (-1,-1), 1, colors.black),
+        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 8),
+
+    ]))
+
+    elements.append(accessories_table)
+
+    elements.append(Spacer(1, 25))
+
+    # =====================================================
+    # SHAFT OPTION
+    # =====================================================
+
+    shaft_title = Paragraph(
+        "Shaft Options",
+        styles['Heading2']
+    )
+
+    elements.append(shaft_title)
+
+    shaft_data = [
+
+        ["Option", "Description"],
+
+        ["200 mm", "Standard"],
+        ["300 mm", "Optional"],
+
+    ]
+
+    shaft_table = Table(
+        shaft_data,
+        colWidths=[180, 220]
+    )
+
+    shaft_table.setStyle(TableStyle([
+
+        ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
+        ('GRID', (0,0), (-1,-1), 1, colors.black),
+        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 8),
+
+    ]))
+
+    elements.append(shaft_table)
+
+    elements.append(Spacer(1, 25))
+
+    # =====================================================
+    # ENGINEERING NOTES
+    # =====================================================
 
     notes = Paragraph(
         """
+        <b>Engineering Notes</b><br/><br/>
+
+        Recommended operating range:
+        30% - 70% of maximum range.<br/><br/>
+
         <b>Reference Conditions</b><br/>
         Sm3/h = 20°C, 1000 mbar (ISO1217)<br/>
         Nm3/h = 0°C, 1013.25 mbar (DIN1343)<br/><br/>
 
-        Recommended operation:
-        30% - 70% of maximum range.<br/><br/>
+        Avoid wet gas and condensate
+        for thermal mass flowmeters.<br/><br/>
 
-        Avoid wet gas and condensate for thermal
-        mass flow applications.
+        Recommended straight pipe:<br/>
+        Upstream: 20D - 50D<br/>
+        Downstream: 5D
         """,
         styles['BodyText']
     )
 
     elements.append(notes)
 
-    elements.append(Spacer(1, 20))
+    elements.append(Spacer(1, 25))
+
+    # =====================================================
+    # FOOTER
+    # =====================================================
 
     footer = Paragraph(
         f"Generated: {datetime.now()}",
@@ -381,6 +584,10 @@ def generate_pdf():
     )
 
     elements.append(footer)
+
+    # =====================================================
+    # BUILD PDF
+    # =====================================================
 
     doc.build(elements)
 
