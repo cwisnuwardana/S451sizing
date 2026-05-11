@@ -374,7 +374,9 @@ st.table(compare_df)
 
 if data is not None:
 
-    st.header("S451 Flow Range")
+    st.header(
+    f"S451 Flow Range - Recommended Size {dn} ({data['inch']})"
+    )
 
     range_df = pd.DataFrame({
 
