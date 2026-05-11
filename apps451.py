@@ -146,7 +146,22 @@ S451_TABLE = {
         "max_value": 51300
     }
 }
+PIPE_MAP = {
 
+    '1"': "DN25",
+    '1-1/4"': "DN32",
+    '1-1/2"': "DN40",
+    '2"': "DN50",
+    '2-1/2"': "DN65",
+    '3"': "DN80",
+    '4"': "DN100",
+    '5"': "DN125",
+    '6"': "DN150",
+    '8"': "DN200",
+    '10"': "DN250",
+    '12"': "DN300",
+
+}
 # =========================================================
 # FUNCTIONS
 # =========================================================
@@ -318,6 +333,38 @@ pipe_df = pd.DataFrame({
 })
 
 st.table(pipe_df)
+
+st.header("Pipe Flow Range Comparison")
+
+pipe_compare = []
+
+pipe_options = [
+    pipe_option_1,
+    pipe_option_2,
+    pipe_option_3
+]
+
+for pipe in pipe_options:
+
+    if pipe in PIPE_MAP:
+
+        dn_key = PIPE_MAP[pipe]
+
+        pipe_data = S451_TABLE[dn_key]
+
+        pipe_compare.append({
+
+            "Pipe": pipe,
+            "DN": dn_key,
+            "Low Range": pipe_data["low"],
+            "Standard Range": pipe_data["standard"],
+            "Max Range": pipe_data["max"]
+
+        })
+
+compare_df = pd.DataFrame(pipe_compare)
+
+st.table(compare_df)
 
 # =========================================================
 # FLOW RANGE
@@ -525,6 +572,54 @@ def generate_pdf():
     ]))
     
     elements.append(pipe_table)
+
+    elements.append(Spacer(1, 20))
+
+compare_title = Paragraph(
+    "Pipe Flow Range Comparison",
+    styles['Heading2']
+)
+
+elements.append(compare_title)
+
+compare_data = [
+
+    ["Pipe", "DN", "Low", "Standard", "Max"]
+
+]
+
+for pipe in [pipe_option_1, pipe_option_2, pipe_option_3]:
+
+    if pipe in PIPE_MAP:
+
+        dn_key = PIPE_MAP[pipe]
+
+        pipe_data = S451_TABLE[dn_key]
+
+        compare_data.append([
+
+            pipe,
+            dn_key,
+            pipe_data["low"],
+            pipe_data["standard"],
+            pipe_data["max"]
+
+        ])
+
+compare_table = Table(
+    compare_data,
+    colWidths=[60, 70, 120, 120, 120]
+)
+
+compare_table.setStyle(TableStyle([
+
+    ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
+    ('GRID', (0,0), (-1,-1), 1, colors.black),
+    ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+
+]))
+
+elements.append(compare_table)
     
     elements.append(Spacer(1, 25))
 
