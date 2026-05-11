@@ -419,6 +419,12 @@ def generate_pdf():
         ["Client", client_name],
         ["Gas Type", gas_type],st.header("Conversion Result"),
 
+# =========================================================
+# RESULT
+# =========================================================
+
+st.header("Conversion Result")
+
 result_df = pd.DataFrame({
 
     "Condition": [
@@ -446,6 +452,10 @@ result_df = pd.DataFrame({
     ]
 
 })
+
+st.table(result_df)
+
+st.success(f"Recommended S451 Size : {dn}")
 
 st.table(result_df)
 
