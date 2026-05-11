@@ -223,6 +223,27 @@ flow_max = st.sidebar.number_input(
 )
 
 # =========================================================
+# PIPE CONNECTION OPTIONS
+# =========================================================
+
+st.sidebar.subheader("Pipe Connection Options")
+
+pipe_option_1 = st.sidebar.text_input(
+    "Option 1",
+    '8"'
+)
+
+pipe_option_2 = st.sidebar.text_input(
+    "Option 2",
+    '10"'
+)
+
+pipe_option_3 = st.sidebar.text_input(
+    "Option 3",
+    '12"'
+)
+
+# =========================================================
 # CALCULATION
 # =========================================================
 
@@ -278,6 +299,25 @@ result_df = pd.DataFrame({
 st.table(result_df)
 
 st.success(f"Recommended S451 Size : {dn}")
+
+st.header("Pipe Connection Options")
+
+pipe_df = pd.DataFrame({
+
+    "Option": [
+        "Option 1",
+        "Option 2",
+        "Option 3"
+    ],
+
+    "Pipe Connection": [
+        pipe_option_1,
+        pipe_option_2,
+        pipe_option_3
+    ]
+})
+
+st.table(pipe_df)
 
 # =========================================================
 # FLOW RANGE
@@ -450,6 +490,41 @@ def generate_pdf():
     ]))
 
     elements.append(table)
+
+    elements.append(Spacer(1, 25))
+
+pipe_title = Paragraph(
+    "Pipe Connection Options",
+    styles['Heading2']
+)
+
+elements.append(pipe_title)
+
+pipe_data = [
+
+    ["Option", "Pipe Connection"],
+
+    ["Option 1", pipe_option_1],
+    ["Option 2", pipe_option_2],
+    ["Option 3", pipe_option_3],
+
+]
+
+pipe_table = Table(
+    pipe_data,
+    colWidths=[180, 250]
+)
+
+pipe_table.setStyle(TableStyle([
+
+    ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
+    ('GRID', (0,0), (-1,-1), 1, colors.black),
+    ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+    ('BOTTOMPADDING', (0,0), (-1,-1), 8),
+
+]))
+
+elements.append(pipe_table)
 
     elements.append(Spacer(1, 25))
 
