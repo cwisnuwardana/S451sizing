@@ -493,40 +493,40 @@ def generate_pdf():
 
     elements.append(Spacer(1, 25))
 
-pipe_title = Paragraph(
-    "Pipe Connection Options",
-    styles['Heading2']
-)
-
-elements.append(pipe_title)
-
-pipe_data = [
-
-    ["Option", "Pipe Connection"],
-
-    ["Option 1", pipe_option_1],
-    ["Option 2", pipe_option_2],
-    ["Option 3", pipe_option_3],
-
-]
-
-pipe_table = Table(
-    pipe_data,
-    colWidths=[180, 250]
-)
-
-pipe_table.setStyle(TableStyle([
-
-    ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
-    ('GRID', (0,0), (-1,-1), 1, colors.black),
-    ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
-    ('BOTTOMPADDING', (0,0), (-1,-1), 8),
-
-]))
-
-elements.append(pipe_table)
-
-elements.append(Spacer(1, 25))
+    pipe_title = Paragraph(
+        "Pipe Connection Options",
+        styles['Heading2']
+    )
+    
+    elements.append(pipe_title)
+    
+    pipe_data = [
+    
+        ["Option", "Pipe Connection"],
+    
+        ["Option 1", pipe_option_1],
+        ["Option 2", pipe_option_2],
+        ["Option 3", pipe_option_3],
+    
+    ]
+    
+    pipe_table = Table(
+        pipe_data,
+        colWidths=[180, 250]
+    )
+    
+    pipe_table.setStyle(TableStyle([
+    
+        ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
+        ('GRID', (0,0), (-1,-1), 1, colors.black),
+        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 8),
+    
+    ]))
+    
+    elements.append(pipe_table)
+    
+    elements.append(Spacer(1, 25))
 
     # =====================================================
     # FLOW RANGE
