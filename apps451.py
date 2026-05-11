@@ -444,6 +444,7 @@ result_df = pd.DataFrame({
         f"{sm3h_normal:,.2f}",
         f"{sm3h_max:,.2f}"
     ]
+
 })
 
 st.table(result_df)
