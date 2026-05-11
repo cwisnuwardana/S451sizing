@@ -526,7 +526,7 @@ pipe_table.setStyle(TableStyle([
 
 elements.append(pipe_table)
 
-    elements.append(Spacer(1, 25))
+elements.append(Spacer(1, 25))
 
     # =====================================================
     # FLOW RANGE
