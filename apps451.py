@@ -628,9 +628,8 @@ def generate_pdf():
     # =====================================================
 
     if data is not None:
-
         range_title = Paragraph(
-            "S451 Flow Range",
+            f"S451 Flow Range - Recommended Size {dn} ({data['inch']})",
             styles['Heading2']
         )
 
