@@ -417,7 +417,7 @@ def generate_pdf():
 
         ["Project", project_name],
         ["Client", client_name],
-        ["Gas Type", gas_type],st.header("Conversion Result")
+        ["Gas Type", gas_type],st.header("Conversion Result"),
 
 result_df = pd.DataFrame({
 
