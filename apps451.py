@@ -166,7 +166,7 @@ def recommend_size(sm3h):
         if sm3h <= data["max_value"]:
             return dn, data
 
-    return None, None
+    return "Above DN300", None
 
 
 # =========================================================
@@ -196,6 +196,10 @@ gas_type = st.sidebar.selectbox(
         "CO2"
     ]
 )
+
+# =========================================================
+# FLOW INPUTS
+# =========================================================
 
 flow_min = st.sidebar.number_input(
     "Minimum Flow (MMSCFD)",
@@ -234,7 +238,7 @@ sm3h_normal = mmscfd_to_sm3h(flow_normal)
 nm3h_max = mmscfd_to_nm3h(flow_max)
 sm3h_max = mmscfd_to_sm3h(flow_max)
 
-# RECOMMENDATION BASED ON MAX FLOW
+# RECOMMENDATION
 dn, data = recommend_size(sm3h_max)
 
 # =========================================================
@@ -279,11 +283,11 @@ st.success(f"Recommended S451 Size : {dn}")
 # FLOW RANGE
 # =========================================================
 
-if dn:
+if data is not None:
 
     st.header("S451 Flow Range")
 
-    df = pd.DataFrame({
+    range_df = pd.DataFrame({
 
         "Range Type": [
             "LOW RANGE",
@@ -298,7 +302,7 @@ if dn:
         ]
     })
 
-    st.table(df)
+    st.table(range_df)
 
 # =========================================================
 # ACCESSORIES
@@ -387,9 +391,8 @@ def generate_pdf():
 
     logo = Image("suto_logo.png")
 
-    logo.drawHeight = 60
-    logo.drawWidth = 290
-
+    logo.drawHeight = 90
+    logo.drawWidth = 270
     logo.hAlign = 'CENTER'
 
     elements.append(logo)
@@ -411,56 +414,23 @@ def generate_pdf():
     elements.append(Spacer(1, 20))
 
     # =====================================================
-    # MAIN INFO TABLE
+    # MAIN INFO
     # =====================================================
 
     info = [
 
         ["Project", project_name],
         ["Client", client_name],
-        ["Gas Type", gas_type],st.header("Conversion Result"),
+        ["Gas Type", gas_type],
 
-# =========================================================
-# RESULT
-# =========================================================
+        ["Min Flow", f"{flow_min:.3f} MMSCFD"],
+        ["Normal Flow", f"{flow_normal:.3f} MMSCFD"],
+        ["Max/Upset Flow", f"{flow_max:.3f} MMSCFD"],
 
-st.header("Conversion Result")
+        ["Min Sm3/h", f"{sm3h_min:,.2f}"],
+        ["Normal Sm3/h", f"{sm3h_normal:,.2f}"],
+        ["Max Sm3/h", f"{sm3h_max:,.2f}"],
 
-result_df = pd.DataFrame({
-
-    "Condition": [
-        "MINIMUM",
-        "NORMAL",
-        "MAX / UPSET"
-    ],
-
-    "MMSCFD": [
-        flow_min,
-        flow_normal,
-        flow_max
-    ],
-
-    "Nm3/h": [
-        f"{nm3h_min:,.2f}",
-        f"{nm3h_normal:,.2f}",
-        f"{nm3h_max:,.2f}"
-    ],
-
-    "Sm3/h": [
-        f"{sm3h_min:,.2f}",
-        f"{sm3h_normal:,.2f}",
-        f"{sm3h_max:,.2f}"
-    ]
-
-})
-
-st.table(result_df)
-
-st.success(f"Recommended S451 Size : {dn}")
-
-st.table(result_df)
-
-st.success(f"Recommended S451 Size : {dn}")
         ["Recommended Size", dn],
 
     ]
@@ -487,40 +457,42 @@ st.success(f"Recommended S451 Size : {dn}")
     # FLOW RANGE
     # =====================================================
 
-    range_title = Paragraph(
-        "S451 Flow Range",
-        styles['Heading2']
-    )
+    if data is not None:
 
-    elements.append(range_title)
+        range_title = Paragraph(
+            "S451 Flow Range",
+            styles['Heading2']
+        )
 
-    range_data = [
+        elements.append(range_title)
 
-        ["Range", "Flow (Sm3/h)"],
+        range_data = [
 
-        ["LOW RANGE", data["low"]],
-        ["STANDARD RANGE", data["standard"]],
-        ["MAX RANGE", data["max"]],
+            ["Range", "Flow (Sm3/h)"],
 
-    ]
+            ["LOW RANGE", data["low"]],
+            ["STANDARD RANGE", data["standard"]],
+            ["MAX RANGE", data["max"]],
 
-    range_table = Table(
-        range_data,
-        colWidths=[180, 250]
-    )
+        ]
 
-    range_table.setStyle(TableStyle([
+        range_table = Table(
+            range_data,
+            colWidths=[180, 250]
+        )
 
-        ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
-        ('GRID', (0,0), (-1,-1), 1, colors.black),
-        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 8),
+        range_table.setStyle(TableStyle([
 
-    ]))
+            ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
+            ('GRID', (0,0), (-1,-1), 1, colors.black),
+            ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+            ('BOTTOMPADDING', (0,0), (-1,-1), 8),
 
-    elements.append(range_table)
+        ]))
 
-    elements.append(Spacer(1, 25))
+        elements.append(range_table)
+
+        elements.append(Spacer(1, 25))
 
     # =====================================================
     # ACCESSORIES
@@ -589,44 +561,6 @@ st.success(f"Recommended S451 Size : {dn}")
     ]))
 
     elements.append(accessories_table)
-
-    elements.append(Spacer(1, 25))
-
-    # =====================================================
-    # SHAFT OPTION
-    # =====================================================
-
-    shaft_title = Paragraph(
-        "Shaft Options",
-        styles['Heading2']
-    )
-
-    elements.append(shaft_title)
-
-    shaft_data = [
-
-        ["Option", "Description"],
-
-        ["200 mm", "Standard"],
-        ["300 mm", "Optional"],
-
-    ]
-
-    shaft_table = Table(
-        shaft_data,
-        colWidths=[180, 220]
-    )
-
-    shaft_table.setStyle(TableStyle([
-
-        ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
-        ('GRID', (0,0), (-1,-1), 1, colors.black),
-        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 8),
-
-    ]))
-
-    elements.append(shaft_table)
 
     elements.append(Spacer(1, 25))
 
