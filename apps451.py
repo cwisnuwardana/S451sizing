@@ -197,10 +197,24 @@ gas_type = st.sidebar.selectbox(
     ]
 )
 
-flow = st.sidebar.number_input(
-    "Flow (MMSCFD)",
+flow_min = st.sidebar.number_input(
+    "Minimum Flow (MMSCFD)",
+    min_value=0.0,
+    value=1.0,
+    step=0.1
+)
+
+flow_normal = st.sidebar.number_input(
+    "Normal Flow (MMSCFD)",
     min_value=0.0,
     value=2.0,
+    step=0.1
+)
+
+flow_max = st.sidebar.number_input(
+    "Maximum / Upset Flow (MMSCFD)",
+    min_value=0.0,
+    value=3.0,
     step=0.1
 )
 
@@ -208,10 +222,20 @@ flow = st.sidebar.number_input(
 # CALCULATION
 # =========================================================
 
-nm3h = mmscfd_to_nm3h(flow)
-sm3h = mmscfd_to_sm3h(flow)
+# MIN
+nm3h_min = mmscfd_to_nm3h(flow_min)
+sm3h_min = mmscfd_to_sm3h(flow_min)
 
-dn, data = recommend_size(sm3h)
+# NORMAL
+nm3h_normal = mmscfd_to_nm3h(flow_normal)
+sm3h_normal = mmscfd_to_sm3h(flow_normal)
+
+# MAX
+nm3h_max = mmscfd_to_nm3h(flow_max)
+sm3h_max = mmscfd_to_sm3h(flow_max)
+
+# Recommendation based on MAX FLOW
+dn, data = recommend_size(sm3h_max)
 
 # =========================================================
 # RESULT
@@ -219,15 +243,36 @@ dn, data = recommend_size(sm3h)
 
 st.header("Conversion Result")
 
-col1, col2, col3 = st.columns(3)
+result_df = pd.DataFrame({
 
-col1.metric("Nm³/h", f"{nm3h:,.2f}")
-col2.metric("Sm³/h", f"{sm3h:,.2f}")
+    "Condition": [
+        "MINIMUM",
+        "NORMAL",
+        "MAX / UPSET"
+    ],
 
-if dn:
-    col3.metric("Recommended Size", dn)
-else:
-    col3.metric("Above Range", "DN300+")
+    "MMSCFD": [
+        flow_min,
+        flow_normal,
+        flow_max
+    ],
+
+    "Nm3/h": [
+        f"{nm3h_min:,.2f}",
+        f"{nm3h_normal:,.2f}",
+        f"{nm3h_max:,.2f}"
+    ],
+
+    "Sm3/h": [
+        f"{sm3h_min:,.2f}",
+        f"{sm3h_normal:,.2f}",
+        f"{sm3h_max:,.2f}"
+    ]
+})
+
+st.table(result_df)
+
+st.success(f"Recommended S451 Size : {dn}")
 
 # =========================================================
 # FLOW RANGE
@@ -372,10 +417,38 @@ def generate_pdf():
 
         ["Project", project_name],
         ["Client", client_name],
-        ["Gas Type", gas_type],
-        ["Input Flow", f"{flow:.3f} MMSCFD"],
-        ["Nm3/h", f"{nm3h:,.2f}"],
-        ["Sm3/h", f"{sm3h:,.2f}"],
+        ["Gas Type", gas_type],st.header("Conversion Result")
+
+result_df = pd.DataFrame({
+
+    "Condition": [
+        "MINIMUM",
+        "NORMAL",
+        "MAX / UPSET"
+    ],
+
+    "MMSCFD": [
+        flow_min,
+        flow_normal,
+        flow_max
+    ],
+
+    "Nm3/h": [
+        f"{nm3h_min:,.2f}",
+        f"{nm3h_normal:,.2f}",
+        f"{nm3h_max:,.2f}"
+    ],
+
+    "Sm3/h": [
+        f"{sm3h_min:,.2f}",
+        f"{sm3h_normal:,.2f}",
+        f"{sm3h_max:,.2f}"
+    ]
+})
+
+st.table(result_df)
+
+st.success(f"Recommended S451 Size : {dn}")
         ["Recommended Size", dn],
 
     ]
