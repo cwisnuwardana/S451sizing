@@ -575,51 +575,51 @@ def generate_pdf():
 
     elements.append(Spacer(1, 20))
 
-compare_title = Paragraph(
-    "Pipe Flow Range Comparison",
-    styles['Heading2']
-)
-
-elements.append(compare_title)
-
-compare_data = [
-
-    ["Pipe", "DN", "Low", "Standard", "Max"]
-
-]
-
-for pipe in [pipe_option_1, pipe_option_2, pipe_option_3]:
-
-    if pipe in PIPE_MAP:
-
-        dn_key = PIPE_MAP[pipe]
-
-        pipe_data = S451_TABLE[dn_key]
-
-        compare_data.append([
-
-            pipe,
-            dn_key,
-            pipe_data["low"],
-            pipe_data["standard"],
-            pipe_data["max"]
-
-        ])
-
-compare_table = Table(
-    compare_data,
-    colWidths=[60, 70, 120, 120, 120]
-)
-
-compare_table.setStyle(TableStyle([
-
-    ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
-    ('GRID', (0,0), (-1,-1), 1, colors.black),
-    ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
-
-]))
-
-elements.append(compare_table)
+    compare_title = Paragraph(
+        "Pipe Flow Range Comparison",
+        styles['Heading2']
+    )
+    
+    elements.append(compare_title)
+    
+    compare_data = [
+    
+        ["Pipe", "DN", "Low", "Standard", "Max"]
+    
+    ]
+    
+    for pipe in [pipe_option_1, pipe_option_2, pipe_option_3]:
+    
+        if pipe in PIPE_MAP:
+    
+            dn_key = PIPE_MAP[pipe]
+    
+            pipe_data = S451_TABLE[dn_key]
+    
+            compare_data.append([
+    
+                pipe,
+                dn_key,
+                pipe_data["low"],
+                pipe_data["standard"],
+                pipe_data["max"]
+    
+            ])
+    
+    compare_table = Table(
+        compare_data,
+        colWidths=[60, 70, 120, 120, 120]
+    )
+    
+    compare_table.setStyle(TableStyle([
+    
+        ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
+        ('GRID', (0,0), (-1,-1), 1, colors.black),
+        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+    
+    ]))
+    
+    elements.append(compare_table)
     
     elements.append(Spacer(1, 25))
 
