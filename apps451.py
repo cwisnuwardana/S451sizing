@@ -313,7 +313,9 @@ result_df = pd.DataFrame({
 
 st.table(result_df)
 
-st.success(f"Recommended S451 Size : {dn}")
+st.success(
+    f"Recommended Pipe Size : {dn} ({data['inch']})"
+)
 
 st.header("Pipe Connection Options")
 
