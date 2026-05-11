@@ -234,7 +234,7 @@ sm3h_normal = mmscfd_to_sm3h(flow_normal)
 nm3h_max = mmscfd_to_nm3h(flow_max)
 sm3h_max = mmscfd_to_sm3h(flow_max)
 
-# Recommendation based on MAX FLOW
+# RECOMMENDATION BASED ON MAX FLOW
 dn, data = recommend_size(sm3h_max)
 
 # =========================================================
@@ -268,6 +268,7 @@ result_df = pd.DataFrame({
         f"{sm3h_normal:,.2f}",
         f"{sm3h_max:,.2f}"
     ]
+
 })
 
 st.table(result_df)
